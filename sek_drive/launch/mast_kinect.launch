@@ -1,0 +1,35 @@
+<launch>
+    <arg name="kinect_frame_prefix" default="/camera" /> 
+    <arg name="kinect_camera_name" default="camera" />
+    <arg name="publish_tf" default="true" />
+
+  <!-- Set driver params for 320x240 at 1-2 Hz frame rate -->
+  <param name="/$(arg kinect_camera_name)/driver/data_skip" value="10" /><!-- 0 is default, 10 will drop 9/10 frames -->
+  <param name="/$(arg kinect_camera_name)/driver/image_mode" value="5" /> <!-- 2 is default -->
+  <param name="/$(arg kinect_camera_name)/driver/depth_mode" value="5" /> <!-- 2 is default -->
+
+  <include file="$(find openni_launch)/launch/openni.launch">
+       <!-- Use 1st device found, or you can specify first device on USB Bus #2 using 2@0  -->
+          <!--<arg name="device_id" value="#1" />
+    <arg name="camera" value="$(arg kinect_camera_name)" />
+    <arg name="rgb_frame_id" value="$(arg kinect_frame_prefix)_rgb_optical_frame" />
+    <arg name="depth_frame_id" value="$(arg kinect_frame_prefix)_ir_optical_frame" />
+    <arg name="publish_tf" value="$(arg publish_tf)"/>
+    <arg name="respawn" value="true"/>
+    <arg name="depth_registration" value="true"/> --> 
+  </include>
+   
+    <!--<node pkg = "image_view" type="image_view" name="kinect_cam" required="true">
+         <remap from="image" to="/camera/rgb/image_color"/>
+        <param name="autosize" value="true" />
+    </node>-->
+    <node pkg = "mjpeg_server" type = "mjpeg_server" name = "mjepg_server" required = "true">
+        <param name = "width" value = "320" />
+        <param name = "height" value = "240" />
+        <param name = "quality" value = "20"/> 
+        <param name = "port" value = "8081"/>
+    </node>
+    <!--
+    <node name="servo_mast" pkg="servo_mast" type="servo_mast" />
+    <node name="kinect_aux" pkg="kinect_aux" type="kinect_aux_node" /> -->
+</launch>

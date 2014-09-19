@@ -1,0 +1,5 @@
+<launch>
+    <node name="DEPTH" pkg="image_view" type="image_view" args="image:=/camera/depth/image" required="true" output="screen">
+        <param name="window_name" value="Depth Imaging"/>
+    </node>
+</launch>

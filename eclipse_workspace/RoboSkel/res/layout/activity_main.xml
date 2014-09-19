@@ -1,0 +1,66 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/robot"
+    tools:ignore="MergeRootFrame" >
+
+    <ImageButton
+        android:id="@+id/imageButton1"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="19dp"
+        android:layout_marginLeft="28dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/facebook_icon2" />
+
+    
+    <Button
+        android:id="@+id/controllerSelection"
+        android:layout_width="230dp"
+        android:layout_height="80dp"
+        android:layout_alignBottom="@+id/gotomap"
+        android:layout_alignLeft="@+id/gotomap"
+        android:layout_marginBottom="111dp"
+        android:text="Manual Control"
+        android:textColor="@color/white"
+        android:textSize="25dp" />
+    
+    <Button
+        android:id="@+id/gotomap"
+        android:layout_alignParentTop="true"
+        android:layout_width="230dp"
+        android:layout_height="80dp"
+        android:textSize="25dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="250dp"
+        android:text="Map"
+        android:textColor="@color/white" />
+
+
+    <Button
+        android:id="@+id/options"
+        android:layout_width="230dp"
+        android:layout_height="80dp"
+        android:layout_alignLeft="@+id/gotomap"
+        android:layout_below="@+id/controllerSelection"
+        android:layout_marginTop="25dp"
+        android:text="Options"
+        android:textColor="@color/white"
+        android:textSize="30dp" />
+    
+    <Button
+        android:id="@+id/exit"
+        android:layout_width="230dp"
+        android:layout_height="80dp"
+        android:layout_alignLeft="@+id/gotomap"
+        android:layout_below="@+id/options"
+        android:layout_marginTop="25dp"
+        android:text="Exit"
+        android:textColor="@color/white"
+        android:textSize="30dp" />
+
+
+</RelativeLayout>

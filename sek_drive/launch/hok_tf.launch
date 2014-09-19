@@ -1,0 +1,9 @@
+    
+<launch>
+  <master auto="start"/>
+  <node pkg="tf" type="static_transform_publisher" name="bl_laser" args="0.30 0.0 0.0 0.0 0.0 0.0 /base_link /laser 40" />
+    <node name="map_server" pkg="map_server" type="map_server" args="/home/skel/.ros/mymap.yaml"/> <!-- test.yaml-->
+    <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node">
+        <param name="intensity" type="bool" value="false"/>
+    </node>
+</launch>

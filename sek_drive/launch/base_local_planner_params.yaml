@@ -1,0 +1,22 @@
+TrajectoryPlannerROS:
+  max_vel_x: 2.00000
+  #1.9974 
+  min_vel_x: 0.10000
+  #OXI H TAXYTHTA OPIS8EN, PREPEI NA NAI THETIKH 
+  #min_vel_x: -2.00000
+  #-2.08721
+  max_rotational_vel: 1.00000
+  #4.66975
+  min_in_place_rotational_vel: 0.4
+  #PREPEI NA EINAI THETIKH
+  #-4.05028
+  yaw_goal_tolerance: 0.05
+  xy_goal_tolerance: 0.10
+  latch_xy_tolerance: false
+  publish_voxel_map: true
+  acc_lim_th: 3.2
+  acc_lim_x: 2.5
+  acc_lim_y: 2.5
+
+  holonomic_robot: false
+  dwa: false

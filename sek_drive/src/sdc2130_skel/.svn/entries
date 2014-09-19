@@ -1,0 +1,42 @@
+10
+
+dir
+0
+https://subversion.assembla.com/svn/roboskel/robot_skel/sdc2130_skel/src/sdc2130_skel
+https://subversion.assembla.com/svn/roboskel
+add
+
+
+
+
+
+
+
+svn:special svn:externals svn:needs-lock
+
+
+
+
+
+
+
+
+
+
+
+35c660a6-76ad-462a-aa12-e168a95b4e13
+
+__init__.py
+file
+
+
+
+add
+
+msg
+dir
+
+
+
+add
+

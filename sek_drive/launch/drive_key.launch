@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="sek_drive" type="sek_key_teleop.py" name="key_teleop" output="screen" required="true"/>
+    <node pkg="sek_drive" type="drive_base" name="drive_base" output="screen" required="true"/>
+    <node pkg="joy" type="joy_node" name="joy_node" output="screen"/>
+    
+</launch>

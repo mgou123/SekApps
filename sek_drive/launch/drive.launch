@@ -1,0 +1,5 @@
+<launch>
+   <node pkg="sek_drive" type="drive_base" name="drive_base" output="screen" required="true"/>
+    <node pkg="joy" type="joy_node" name="joy_node" required="true"/>
+    <!-- <node pkg="robot_server" type="robotserverBl.py" name="robot_server" required="true"/> -->
+</launch>

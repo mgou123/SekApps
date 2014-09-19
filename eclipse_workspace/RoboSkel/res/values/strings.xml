@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">RoboSkel</string>
+    <string name="action_settings">Settings</string>
+    <string name="controls">Controller</string>
+    <string name="map">Map</string>
+    <string name="manualC">Manual Control</string>
+    <string name="sensorC">Sensor Control</string>
+    <string name="simpleC">Simple Control</string>
+    <string name="joystickC">Joystick Control</string>
+    <string name="title_activity_display_map">DisplayMap</string>
+    <string name="title_activity_manual_control">ManualControl</string>
+    <string name="title_section1">Section 1</string>
+    <string name="title_section2">Section 2</string>
+    <string name="title_section3">Section 3</string>
+    <string name="warning">Exit Application?</string>
+    <string name="clear">Clear Map</string>
+
+    <color name="white">#FFFFFF</color>
+    <color name="blue">#ADD8E6</color>
+    <color name="metalic">#BCC6CC</color>
+    <color name="black">#000000</color>
+    <color name="psilokokkino">#580000</color>
+    <color name="grey">#C0C0C0</color>
+
+    <string name="title_activity_circle_control">CircleControl</string>
+    <string name="title_activity_simple_sensor">SimpleSensor</string>
+    <string name="title_activity_sensor_control">SensorControl</string>
+    <string name="title_activity_loading">LoadingActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_main">Main</string>
+    
+    <!-- Menu strings -->
+    <string name="phone">Phone</string>
+    <string name="computer">Computer</string>
+    <string name="gamepad">Manual Conrtrol</string>
+ 	<string name="navigate">Navigate</string>
+    <string name="camera">Sec View</string>
+    <string name="video">Video</string>
+ 	<string name="search">Search</string>
+    <string name="email">EMail</string>
+    <string name="saveMap">Save Map</string>
+    <string name="downloadMap">Download Map</string>
+    <string name="setLoc">Set location</string>
+    <string name="setDest">Set destination</string>
+    <string name="recording">manouver recording</string>
+	<string name="end_recording">end recording</string>
+	<string name="manouver">initiate manouver</string>
+	<string name="stop_manouver">stop manouver</string>
+</resources>

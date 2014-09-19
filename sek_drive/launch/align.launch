@@ -1,0 +1,36 @@
+<launch>
+    <master auto="start"/>
+    
+    <!--<include file="$(find openni_launch)/launch/openni.launch">-->
+    <!-- Use 1st device found, or you can specify first device on USB Bus #2 using 2@0  -->
+    <!--<arg name="device_id" value="#1" />
+    <arg name="camera" value="$(arg kinect_camera_name)" />
+    <arg name="rgb_frame_id" value="$(arg kinect_frame_prefix)_rgb_optical_frame" />
+    <arg name="depth_frame_id" value="$(arg kinect_frame_prefix)_ir_optical_frame" />
+    <arg name="publish_tf" value="$(arg publish_tf)"/>
+    <arg name="respawn" value="true"/>
+    <arg name="depth_registration" value="true"/> --> 
+    <!--</include>-->
+    
+    <node pkg="tf" type="static_transform_publisher" name="world_to_cam" 
+        args="0.0 0.0 0.0 0 0 0 /world /camera_rgb_optical_frame 10"/>
+        
+    <node pkg="sek_drive" type="align" name="align" required="true" output="screen">
+        <param name="cof_pos_x" value = "-0.864734091411"/>
+        <param name="cof_pos_y" value = "-0.219346039279"/>
+        <param name="cof_or_w" value = "-0.00251686649795"/>
+        <param name="cof_or_z" value = "0.999996832686"/>
+    </node>
+    
+    <node name="ar_pose" pkg="ar_pose" type="ar_single" respawn="false" output="screen">
+        <param name="marker_pattern" type="string" value="data/coffee/coffee_1.patt"/>
+        <param name="marker_width" type="double" value="80.0"/>
+        <param name="marker_center_x" type="double" value="0.0"/>
+        <param name="marker_center_y" type="double" value="0.0"/>
+        <param name="threshold" type="int" value="100"/>
+        <param name="use_history" type="bool" value="true"/>
+        <remap from="/usb_cam/image_raw"   to="/camera/rgb/image_raw"/>
+        <remap from="/usb_cam/camera_info" to="/camera/rgb/camera_info"/>
+    </node>
+    
+</launch>

@@ -1,0 +1,28 @@
+
+<launch>
+  <master auto="start"/>
+  
+  <node pkg="tf" type="static_transform_publisher" name="bl_laser" args="0.30 0.0 0.0 0.0 0.0 0.0 /base_link /laser 40" />
+    <node name="map_server" pkg="map_server" type="map_server" args="/home/skel/.ros/mymap.yaml"/> 
+    
+    <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node">
+        <param name="intensity" type="bool" value="false"/>
+    </node>
+
+  <!--- Run AMCL -->
+    <include file="$(find sek_drive)/launch/amcl2.launch" />
+    <include file="$(find sek_drive)/launch/hektor_nav.launch"/>
+    <node pkg="move_base" type="move_base" name="move_base" required="true" output="screen">
+        <rosparam file="$(find sek_drive)/launch/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find sek_drive)/launch/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find sek_drive)/launch/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find sek_drive)/launch/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find sek_drive)/launch/base_local_planner_params.yaml" command="load" />
+    </node>
+    <node pkg="joy" type="joy_node" name="joy_node"/>
+  <node pkg="sek_drive" type="drive_base" required="true" name="sek_drive" output="screen"/>
+  <!--<node pkg="sek_drive" type="init_pose" required="true" name="init_pose"/>-->
+    <!--<node pkg="sek_drive" type="odom_transformer" name="odom_transformer" required="true"/>-->
+  <node pkg="robot_server" type="robotserverBl.py" name="robot_server" required="true" output="screen"/>
+
+</launch>

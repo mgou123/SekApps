@@ -1,0 +1,70 @@
+
+<launch>
+    <!--
+    <include file="$(find hector_mapping)/launch/mapping_default2.launch"/>
+    -->
+    <param name="use_sim_time" value="false"/>
+    <include file="$(find sek_drive)/launch/sek_kinect.launch"/>
+    <include file="$(find ccny_rgbd)/launch/visual_odometry.launch"/>
+     
+    <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="map_update_interval" value="5.0"/>
+    <param name="maxUrange" value="6.0"/>
+    <param name="sigma" value="0.05"/>
+    <param name="kernelSize" value="1"/>
+    <param name="lstep" value="0.05"/>
+    <param name="astep" value="0.05"/>
+    <param name="iterations" value="5"/>
+    <param name="lsigma" value="0.075"/>
+    <param name="ogain" value="3.0"/>
+    <param name="lskip" value="0"/>
+    <param name="srr" value="0.1"/>
+    <param name="srt" value="0.2"/>
+    <param name="str" value="0.1"/>
+    <param name="stt" value="0.2"/>
+    <param name="linearUpdate" value="1.0"/>
+    <param name="angularUpdate" value="0.5"/>
+    <param name="temporalUpdate" value="3.0"/>
+    <param name="resampleThreshold" value="0.5"/>
+    <param name="particles" value="30"/>
+    <param name="xmin" value="-50.0"/>
+    <param name="ymin" value="-50.0"/>
+    <param name="xmax" value="50.0"/>
+    <param name="ymax" value="50.0"/>
+    <param name="delta" value="0.05"/>
+    <param name="llsamplerange" value="0.01"/>
+    <param name="llsamplestep" value="0.01"/>
+    <param name="lasamplerange" value="0.005"/>
+    <param name="lasamplestep" value="0.005"/>
+    </node>
+    
+    
+    <!--<node pkg="sek_drive" type="drive_base" name="drive_base" output="screen" required="true"/>-->
+    <!-- <node pkg="sek_drive" type="vel_logger" name="vel_logger" output="screen"/> -->
+    <node pkg="tf" type="static_transform_publisher" name="bl_laser" args="0.30 0.0 0 0.0 0.0 0.0 /base_link /laser 40" />
+    <node pkg="tf" type="static_transform_publisher" name="bl_kinect" args="0.0 0.0 0 0.0 0.0 0.0 /laser /camera_link 40" />
+    
+
+    <node pkg="joy" type="joy_node" name="joy_node" output="screen"/>
+    
+    <!--
+	<node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node"> 
+        <param name="intensity" type="bool" value="false"/>
+    </node>
+    -->
+   <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name ="ditl" output="screen">
+       <remap from="image" to="/camera/depth/image_raw" />
+   </node>
+  
+      <node pkg="sek_drive" type="sek_controller" name="sek_controller" required="true">
+        <param name="use_imu" type="bool" value="false"/>
+        <param name="odom_mode" value="1"/>
+        <param name="pub_tf" type="bool" value="false"/>
+        <param name="max_speed_lim" type="double" value="0.25"/>
+        <param name="rc_max_speed_lim" type="double" value="0.5"/>
+        <param name="max_vel_x" type="double" value="0.31416"/>
+        <param name="min_vel_x" type="double" value="0.04"/>
+    </node>
+    
+    
+</launch> 

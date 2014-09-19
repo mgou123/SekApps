@@ -1,0 +1,5 @@
+<launch>
+    <group ns="maneuvers">
+        <node pkg="rosbag" type="record" name="record_man" args="-O maneuver.bag /joy"/>
+    </group>
+</launch>

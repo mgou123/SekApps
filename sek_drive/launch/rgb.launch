@@ -1,0 +1,5 @@
+<launch>
+    <node name="RGB" pkg="image_view" type="image_view" args="image:=/camera/rgb/image_color" required="true" output="screen">
+        <param name="window_name" value="RGB Imaging"/>
+    </node>
+</launch>

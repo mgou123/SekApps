@@ -1,0 +1,20 @@
+#!/usr/bin/python           # This is client.py file
+
+import socket               # Import socket module
+
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)         # Create a socket object
+host = socket.gethostname() # Get local machine name
+port = 12345                # Reserve a port for your service.
+print("hostname ={}".format(host))
+s.connect((host, port))
+n=s.sendall("android St252gs".encode(encoding='utf_8', errors='strict')) #send device's name
+print("message sent")
+#while n != None:
+#		n=s.send("android St252gs".encode(encoding='utf_8', errors='strict')) #send device's name
+
+l=s.recv(1024)#receive message
+  
+if l!="":
+    print(l.decode('UTF-8'))
+print('end')                   # Close the socket when done
+s.close

@@ -1,0 +1,8 @@
+<launch>
+    <node pkg="tf" type="static_transform_publisher" name="bl_laser" args="0.10 0.10 0 0.0 0.0 0.0 /base_link /laser 100" />
+    <node pkg="sek_drive" type="drive_base" name="drive_base" output="screen" required="true"/>
+    <node pkg="joy" type="joy_node" name="joy_node" output="screen" required="true"/>
+    <node pkg="sek_drive" type="vel_logger" name="vel_logger" output="screen" required="true"/>
+    <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher" output="screen" required="true"/>
+    <node pkg="hokuyo_node" type="hokuyo_node" name="hokuyo_node" required="true"/>
+</launch>

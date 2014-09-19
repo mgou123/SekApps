@@ -1,0 +1,71 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+	    android:id="@+id/navigation"
+        android:title="@string/navigate"
+        android:icon="@drawable/action_map"
+        android:showAsAction="ifRoom|withText"
+        style="@style/Theme.Sherlock"
+    />
+    
+    <item
+        android:id="@+id/camera"
+        android:title="@string/camera"
+        android:icon="@drawable/camera"
+        android:showAsAction="ifRoom|withText"
+        style="@style/Theme.Sherlock"
+    />
+    
+     
+    <item
+        android:id="@+id/set_location"
+        android:title="@string/setLoc"
+        android:icon="@drawable/ic_action_location_found"
+        android:showAsAction="ifRoom|withText"
+    />
+ 
+    <item
+        android:id="@+id/gamepad"
+        android:title="@string/gamepad"
+        android:icon="@drawable/gamepad"
+        android:showAsAction="ifRoom|withText"
+        style="@style/Theme.Sherlock"
+ 
+    />
+ 
+    <item
+        android:id="@+id/set_destination"
+        android:title="@string/setDest"
+        android:showAsAction="ifRoom|withText"
+    />
+ 
+   <item
+        android:id="@+id/save_map"
+        android:title="@string/saveMap"
+        android:showAsAction="ifRoom|withText"
+    />
+   
+   <item
+        android:id="@+id/download_map"
+        android:title="@string/downloadMap"
+        android:showAsAction="ifRoom|withText"
+    />
+    <item
+        android:id="@+id/action_settings"
+        android:icon="@drawable/ic_action_map_navigating"
+        android:showAsAction="ifRoom|withText"
+        android:title="@string/clear"/>
+	
+     <item
+        android:id="@+id/begin_manuver"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/manouver"/>
+    <item
+        android:id="@+id/end_manouver"
+        android:orderInCategory="100"
+        android:showAsAction="never"
+        android:title="@string/stop_manouver"/>
+    
+
+</menu>
