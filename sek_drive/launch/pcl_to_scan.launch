@@ -1,0 +1,7 @@
+<launch>
+  <!-- kinect nodes -->
+  <include file="$(find openni_launch)/launch/openni.launch"/>
+    <remap from="/camera/depth/image" to="/image"/>
+    <remap from="/camera/depth/camera_info" to="/camera_info"/>
+  <node pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" name="depthimage_to_laserscan" output="screen"/>
+</launch>

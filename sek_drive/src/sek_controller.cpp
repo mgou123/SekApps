@@ -75,6 +75,8 @@ bool bullshit; //DELETE
         double xx, yy, tt;
         
         bool firstOdom;
+        bool rp_from_imu;
+        bool y_from_imu;
         RoboteqDevice device;
         
         ros::Time prev_time, current_time, enc_loop_time;
@@ -83,12 +85,18 @@ bool bullshit; //DELETE
         
         ros::Subscriber hok_in;//DELETE
         tf::TransformBroadcaster *odom_broadcaster;
+        ros::Subscriber imu_sub;// = n.subscribe("/imu", 10, imu_Callback);
         //geometry_msgs::Quaternion q_imu;
+        
+        //ros::Subscriber imu_sub;
+        //double imu_yaw=0;
+
+        geometry_msgs::Quaternion q_imu;
         
     public:
         sek_controller (ros::NodeHandle& n): n_(n), ODOMETRY_MODE(1), PUB_TF(1), PUB_ODOM(1), CAMERA_ON(0), max_vel_x(0.6), min_vel_x(0.04),
             max_rotational_vel(2.3771), acc_lim_th(0), acc_lim_x(0), acc_lim_y(0), MAX_SPEED_LIMIT(1), RC_MAX_SPEED_LIMIT(0), encoder_ppr(450), encoder_cpr(0), LM(0), RM(0),
-            lenc(0), renc(0), lenc_prev(0), renc_prev(0), lenc_init(0), renc_init(0), enc_errors(0), lenc2(0), renc2(0), bullshit(false)/*DELETE*/
+            lenc(0), renc(0), lenc_prev(0), renc_prev(0), lenc_init(0), renc_init(0), enc_errors(0), lenc2(0), renc2(0), bullshit(false), rp_from_imu(false),y_from_imu(false)/*DELETE*/
             {}
             
         double wrapToPi(double angle)
@@ -104,10 +112,6 @@ bool bullshit; //DELETE
             return angle;
         }
         
-        void calcVelocities()
-        {
-            
-        }
         void alignCallback(const std_msgs::Int32MultiArray::ConstPtr& array)
         {
             std::vector<int>::const_iterator it = array->data.begin();
@@ -173,7 +177,7 @@ bool bullshit; //DELETE
             int status;
             
             double L_V = msg->axes[3]*1000;
-            double A_V = msg->axes[4]*1000;
+            double A_V = msg->axes[2]*1000;
             
             ROS_INFO("L_V : %f        A_V : %f",L_V, A_V);
             if((L_V != 0) || (A_V != 0))
@@ -546,9 +550,9 @@ bool bullshit; //DELETE
             double roll = 0;
             double pitch = 0;
             double yaw = 0;
-            //tf::Quaternion q;
-            //tf::quaternionMsgToTF(q_imu, q);
-            //tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
+            tf::Quaternion q;
+            tf::quaternionMsgToTF(q_imu, q);
+            tf::Matrix3x3(q).getRPY(roll, pitch, yaw);
             
             if (firstOdom)
             {
@@ -560,7 +564,7 @@ bool bullshit; //DELETE
                 firstOdom = false;
             }
             
-            if (ODOMETRY_MODE == 1)
+            if (true)
             {
                 int diff_lenc = lenc - lenc_prev;
                 int diff_renc = renc - renc_prev;
@@ -586,9 +590,24 @@ bool bullshit; //DELETE
                     tt = 0;
                     firstOdom = false;
                 }
-                tt = tt + w * delta_time;
+                else {
+                    if (!rp_from_imu) {
+                        roll = 0;
+                        pitch = 0;
+                }
+                //	tt=wrapToPi(yaw);
+                //}
+                    if (y_from_imu) {
+                        tt = wrapToPi(yaw);
+                    }
+                    else {
+                        tt = tt + w * delta_time;
+                        tt = wrapToPi(tt);
+                    }
+                }
+                //tt = tt + w * delta_time;
                 //ROS_INFO("TT BEFORE WRAP : %f",tt);
-                tt = wrapToPi(tt);
+                //tt = wrapToPi(tt);
                 //ROS_INFO("TT : %f", tt);
                 //ROS_INFO("V BEFORE CREATE QUATERNION : %f",v);
                 //ROS_INFO("TT AFTER WRAP : %f",tt);
@@ -600,8 +619,8 @@ bool bullshit; //DELETE
                 //ROS_INFO("%f   %f",xx ,yy);
                 //ROS_INFO("%f    %f",v ,w);
                 //ROS_INFO("---------");
-                if(PUB_ODOM == 1)
-                {
+                //if(PUB_ODOM == 1)
+                //{
                     nav_msgs::Odometry odom_msg;
                     //odom_msg.header.stamp = now;
                     odom_msg.header.frame_id = "odom";
@@ -628,7 +647,7 @@ bool bullshit; //DELETE
                     odom_msg.twist.covariance = odom_msg.pose.covariance;
 
                     odom_pub.publish(odom_msg);
-                }
+                //}
             }
             else
             {
@@ -639,14 +658,37 @@ bool bullshit; //DELETE
                 //ROS_INFO("V AFTER : %f",v);
                 double w = (r_v - l_v) / WHEEL_BASE_WIDTH;
                 
-                tt = tt + w * delta_time;
-                tt = wrapToPi(tt);
+                if (firstOdom)
+                {
+                    xx = 0;
+                    yy = 0;
+                    tt = 0;
+                    firstOdom = false;
+                }
+                else {
+                    if (!rp_from_imu) {
+                        roll = 0;
+                        pitch = 0;
+                }
+                //	tt=wrapToPi(yaw);
+                //}
+                    if (y_from_imu) {
+                        tt = wrapToPi(yaw);
+                    }
+                    else {
+                        tt = tt + w * delta_time;
+                        tt = wrapToPi(tt);
+                    }
+                }
+                
+                //tt = tt + w * delta_time;
+                //tt = wrapToPi(tt);
                 xx = xx + (v * cos(tt)) * delta_time ;
                 yy = yy + (v * sin(tt)) * delta_time;
                 
                 //ROS_INFO("TT BEFORE WRAP : %f",tt);
                 
-                quat = tf::createQuaternionMsgFromRollPitchYaw(wrapToPi(roll), wrapToPi(pitch), tt);
+                quat = tf::createQuaternionMsgFromRollPitchYaw(0, 0, tt);
 
                 nav_msgs::Odometry odom_msg;
                 //odom_msg.header.stamp = now;
@@ -690,7 +732,24 @@ bool bullshit; //DELETE
                 odom_trans.transform.translation.z = 0.0;
                 odom_trans.transform.rotation = quat;
                 odom_broadcaster->sendTransform(odom_trans);
-            }*/
+            }
+            */
+            geometry_msgs::TransformStamped odom_trans;
+                odom_trans.header.stamp = now;
+                odom_trans.header.frame_id = "odom";
+                odom_trans.child_frame_id = "base_link";
+                odom_trans.transform.translation.x = xx;
+                odom_trans.transform.translation.y = yy;
+                odom_trans.transform.translation.z = 0.0;
+                odom_trans.transform.rotation = quat;
+                odom_broadcaster->sendTransform(odom_trans);
+        }
+        
+        void imu_Callback(const sensor_msgs::Imu::ConstPtr& msg) {
+            //ROS_INFO("imu yaw:%f",imu_yaw);
+            q_imu = msg->orientation;
+            //imu_yaw=tf::getYaw(msg->orientation);
+            //ROS_INFO("imu yaw:%f",tf::getYaw(msg->orientation));
         }
         
         void calculateVel()
@@ -735,6 +794,11 @@ bool bullshit; //DELETE
             encoder_pub = n_.advertise<sek_drive::encoders>("/encoders", 10);
             encoder_pub_ticks = n_.advertise<sek_drive::encoders>("/encoder_ticks", 10);
             pose_pub2 = n_.advertise<geometry_msgs::PoseStamped>("/poseStamped",5);
+            q_imu = tf::createQuaternionMsgFromYaw(0);
+            
+            n_.param("roll_pitch_from_imu", rp_from_imu, true);
+            n_.param("yaw_from_imu", y_from_imu, true);
+            imu_sub = n_.subscribe("/imu", 10, &sek_controller::imu_Callback, this);
     
             ros::Subscriber sub = n_.subscribe("/joy", 1, &sek_controller::teleopCallback, this);
             
@@ -801,14 +865,13 @@ bool bullshit; //DELETE
             
         //SKATA    
     SCAN_RECEIVED = 0;
-    
 	float min_angle = gl_scan.angle_min;//save the minimum angle in degrees
 	float max_angle = gl_scan.angle_max;//save the maximum angle in degrees
             //SKATA
             
             
             
-            
+            bool first = true;
             while (ros::ok())
             {
                 ros::spinOnce();
@@ -824,22 +887,93 @@ bool bullshit; //DELETE
                     
                 //BULLSHIT STARTS HERE  
                 //ROS_INFO("Looping");
-                
                 if(bullshit){
                     int mul = 1;
                     if ((SCAN_RECEIVED == 1))
                     {   
-                        float straight = gl_scan.ranges[24];
+                        float straight = gl_scan.ranges[floor(gl_scan.ranges.size()/2)];
                         if(straight == straight){
-                            mul += straight; 
+                            mul += straight/2; 
                         }
-                        if(mul > 2.5){
-                            mul = 2.5;
+                        if(mul > 2){
+                            mul = 2;
                         }
-                        if(straight != straight){
-                            mul = 3;
+                        float r = gl_scan.ranges[120];
+                        int i = 0;
+                        while(r != r){
+                            r = gl_scan.ranges[++i];
                         }
-                        float r = gl_scan.ranges[0];
+                        int j = gl_scan.ranges.size() - 121;
+                        float l = gl_scan.ranges[j];
+                        while(l != l){
+                            l = gl_scan.ranges[--j];
+                        }
+                        ROS_INFO("L = %f",l);
+                        ROS_INFO("R = %f",r);
+                    if(abs(l-r) > 0.15 || (l < 0.45 && l > 0.25 && r > 0.25 && r < 0.45)){
+                        if(l < r){
+                            //ROS_INFO("TURN RIGHT");
+                            if(l < 0.35){
+                                device.SetCommand(_GO, 1, 300*mul);
+                                device.SetCommand(_GO, 2, 400*mul);
+                            }
+                            else if(l < 0.45){
+                                device.SetCommand(_GO, 1, -200*mul);
+                                device.SetCommand(_GO, 2, 500*mul);
+                            }
+                            else if(l < 0.7){
+                                device.SetCommand(_GO, 1, -300*mul);
+                                device.SetCommand(_GO, 2, 600*mul);
+                            }
+                            else if(l < 1.5){
+                                device.SetCommand(_GO, 1, -450*mul);
+                                device.SetCommand(_GO, 2, 900*mul);
+                            }
+                            else{
+                                device.SetCommand(_GO, 1, -600*mul);
+                                device.SetCommand(_GO, 2, 1000*mul);
+                            }
+                        }
+                        else if(l > r){
+                            //ROS_WARN("TURN LEFT");
+                            if(r< 0.35){
+                                device.SetCommand(_GO, 1, -400*mul);
+                                device.SetCommand(_GO, 2, -300*mul);
+                            }
+                            else if(r < 0.45){
+                                device.SetCommand(_GO, 1, -500*mul);
+                                device.SetCommand(_GO, 2, 200*mul);
+                            }
+                            else if(r < 0.7){
+                                device.SetCommand(_GO, 1, -600*mul);
+                                device.SetCommand(_GO, 2, 300*mul);
+                            }
+                            else if(r < 1.5){
+                                device.SetCommand(_GO, 1, -900*mul);
+                                device.SetCommand(_GO, 2, 450*mul);
+                            }
+                            else{
+                                device.SetCommand(_GO, 1, -1000*mul);
+                                device.SetCommand(_GO, 2, 600*mul);
+                            }
+                        }
+                    }
+                    else{
+                        if(straight >= 1.5){
+                            device.SetCommand(_GO, 1, -700*mul);
+                            device.SetCommand(_GO, 2, 700*mul);
+                        }
+                        else if(straight >= 1){
+                            device.SetCommand(_GO, 1, -600*mul);
+                            device.SetCommand(_GO, 2, 600*mul);
+                        }
+                        else{
+                            device.SetCommand(_GO, 1, -500*mul);
+                            device.SetCommand(_GO, 2, 500*mul);
+                        }
+                    }
+                        
+                       /* float r = gl_scan.ranges[0];
                         int i = 0;
                         while(r != r){
                             r = gl_scan.ranges[++i];
@@ -849,26 +983,53 @@ bool bullshit; //DELETE
                         while(l != l){
                             l = gl_scan.ranges[--j];
                         }
-                        //ROS_ERROR("LEFT = %f , RIGHT = %f",l,r);
-                        if(l < r){
-                            //ROS_INFO("TURN RIGHT");
-                            int minRIGHT = -100;
-                            int minLEFT = 100;
-                            device.SetCommand(_GO, 1, minRIGHT*mul/2);
-                            device.SetCommand(_GO, 2, (minLEFT+(l*100))*mul);
-                            //device.SetCommand(_GO, 1, (minRIGHT+(l*100))*mul);
-                            //device.SetCommand(_GO, 2, minLEFT*mul);
+                        //ROS_INFO("L = %f",l);
+                        //ROS_INFO("R = %f",r);
+                        if(l > r){//turn left
+                                if(l < 0.4){
+                                    device.SetCommand(_GO, 1, -400);
+                                    device.SetCommand(_GO, 2, 100);
+                                }
+                                else if(l < 0.6){
+                                    device.SetCommand(_GO, 1, -600);
+                                    device.SetCommand(_GO, 2, 100);
+                                }
+                                else if(l < 0.8){
+                                    device.SetCommand(_GO, 1, -700);
+                                    device.SetCommand(_GO, 2, 200);
+                                }
+                                else if(l < 1){
+                                    device.SetCommand(_GO, 1, -800);
+                                    device.SetCommand(_GO, 2, 300);
+                                }
+                                else{
+                                    device.SetCommand(_GO, 1, -800);
+                                    device.SetCommand(_GO, 2, 400);
+                                }
                         }
-                        else if(l > r){
-                            //ROS_WARN("TURN LEFT");
-                            int minRIGHT = -100;
-                            int minLEFT = 100;
-                            device.SetCommand(_GO, 1, (minRIGHT-(r*100))*mul);
-                            device.SetCommand(_GO, 2, minLEFT*mul/2);
-                            //device.SetCommand(_GO, 1, minRIGHT*mul);
-                            //device.SetCommand(_GO, 2, (minLEFT-(r*100))*mul);
-                        }
-                        SCAN_RECEIVED = 0;
+                        else{//turn right
+                            if(r < 0.4){
+                                device.SetCommand(_GO, 1, -100);
+                                device.SetCommand(_GO, 2, 400);
+                            }
+                            else if(r < 0.6){
+                                device.SetCommand(_GO, 1, -100);
+                                device.SetCommand(_GO, 2, 600);
+                            }
+                            else if(r < 0.8){
+                                device.SetCommand(_GO, 1, -200);
+                                device.SetCommand(_GO, 2, 700);
+                            }
+                            else if(r < 1){
+                                device.SetCommand(_GO, 1, -300);
+                                device.SetCommand(_GO, 2, 800);
+                            }
+                            else{
+                                device.SetCommand(_GO, 1, -400);
+                                device.SetCommand(_GO, 2, 800);
+                            }
+                        }*/
+                    SCAN_RECEIVED = 0;
                     }
                 } 
                 //BULLSHIT ENDS HERE         

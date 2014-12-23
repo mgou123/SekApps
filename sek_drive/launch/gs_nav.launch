@@ -5,16 +5,21 @@
   
   <param name="use_sim_time" value="false"/>
     <!--<include file="$(find sek_drive)/launch/sek_kinect.launch"/>-->
-    <!--
     <include file="$(find razor_imu_9dof)/launch/razor-pub.launch"/>
-    -->
+
+      <node pkg="tf" type="static_transform_publisher" name="p1_pub" args="-0.7 0.1 0.0 0.0 0.0 0.0 /base_link /p1 40" />
+  <node pkg="tf" type="static_transform_publisher" name="p2_pub" args="-0.7 -0.1 0.0 0.0 0.0 0.0 /base_link /p2 40" />
+  <node pkg="tf" type="static_transform_publisher" name="goal_pub" args="-1 -0.05 0.0 0.0 0.0 0.0 /base_link /g 40" />
+
+<!--- Run Move Base -->
+<!--<include file="$(find husky_fei_navigation)/launch/move_base.launch"/>-->
+
 <!--
     <include file="$(find ccny_rgbd)/launch/visual_odometry.launch"/>
 -->
     <node pkg="tf" type="static_transform_publisher" name="bl_laser" args="0.30 0.0 0.0 0.0 0.0 0.0 /base_link /laser 100" />
-    <!--<node pkg="tf" type="static_transform_publisher" name="imu" args="0.00 0.0 0.0 0.0 0.0 0.0 /base_link /base_imu_link 100"/>-->
     
-    <node name="map_server" pkg="map_server" type="map_server" args="/home/skel/grafeio.yaml"/>
+    <node name="map_server" pkg="map_server" type="map_server" args="/home/skel/sexyBeast.yaml"/>
     
     <!--
     <node pkg="laser_scan_matcher" type="laser_scan_matcher_node" name="laser_scan_matcher_node" required="true" output="screen">
@@ -52,16 +57,27 @@
     -->
     
   <!--- Run AMCL -->
-  <!--
-    <include file="/home/skel/navigation/amcl/examples/amcl_diff.launch" />
+    <!--<include file="/home/skel/navigation/amcl/examples/amcl_diff.launch" />
     <node pkg="move_base" type="move_base" name="move_base" required="true" output="screen">
         <rosparam file="$(find sek_drive)/launch/costmap_common_params.yaml" command="load" ns="global_costmap" />
         <rosparam file="$(find sek_drive)/launch/costmap_common_params.yaml" command="load" ns="local_costmap" />
         <rosparam file="$(find sek_drive)/launch/local_costmap_params.yaml" command="load" />
         <rosparam file="$(find sek_drive)/launch/global_costmap_params.yaml" command="load" />
         <rosparam file="$(find sek_drive)/launch/base_local_planner_params.yaml" command="load" />
-    </node>
-    -->
+    </node>-->
+    
+    <include file="/home/skel/ws2/src/sek_drive/launch/gs_amcl.launch" />
+     <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen">
+        <param name="base_global_planner" value="navfn/NavfnROS"/>
+        <rosparam file="$(find sek_drive)/launch/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find sek_drive)/launch/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find sek_drive)/launch/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find sek_drive)/launch/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find sek_drive)/launch/base_local_planner_params.yaml" command="load" />
+    <!-- <remap from="cmd_vel" to="plan_cmd_vel" /> -->
+  <!--  <remap from="scan" to="laser_data" />-->
+  </node>
+    
         <!--
     <node pkg="sek_drive" type="drive_base" required="true" name="sek_drive" output="screen">
     <param name="con_mode" value = "2"/>
@@ -76,15 +92,13 @@
     </node>
     -->
     <node pkg="sek_drive" type="sek_controller" name="sek_controller" required="true" output="screen">
-        <!--
-        <param name="use_imu" type="bool" value="false"/>
-        <param name="odom_mode" value="1"/>
+        <param name="use_imu" type="bool" value="true"/>
+        <param name="odom_mode" value="0"/>
         <param name="pub_tf" type="bool" value="true"/>
         <param name="max_speed_lim" type="double" value="0.25"/>
         <param name="rc_max_speed_lim" type="double" value="0.5"/>
         <param name="max_vel_x" type="double" value="0.31416"/>
         <param name="min_vel_x" type="double" value="0.04"/>
-        -->
     </node>
     
     
@@ -92,7 +106,7 @@
     
     
     <node pkg="urg_node" type="urg_node" name="urg_node"> 
-        <param name="publish_intensity" type="bool" value="false"/>
+        <param name="publish_intensity" type="bool" value="true"/>
         <param name="serial_port" type="string" value=""/>
         <param name="ip_address" type="string" value="192.168.0.10"/>
         <param name="angle_min" type="double" value="-1.57"/>

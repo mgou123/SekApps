@@ -1,0 +1,13 @@
+    
+<launch>
+  <master auto="start"/>
+    
+  <node pkg="urg_node" type="urg_node" name="urg_node"> 
+        <param name="publish_intensity" type="bool" value="false"/>
+        <param name="serial_port" type="string" value=""/>
+        <param name="ip_address" type="string" value="192.168.0.10"/>
+        <param name="angle_min" type="double" value=1.0/>
+        <param name="angle_max" type="double" value="1.0"/>
+    </node>
+    
+</launch>
